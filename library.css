@@ -1,0 +1,215 @@
+/* ══════════════════════════════════════════════════
+   Folio — Library View
+   ══════════════════════════════════════════════════ */
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+.lib-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px;
+  padding-top: max(16px, env(safe-area-inset-top, 16px));
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+}
+.lib-header__brand { display: flex; align-items: center; gap: 10px; }
+.logo { color: var(--accent); }
+.logo-text {
+  font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.lib-header__controls { display: flex; align-items: center; gap: 2px; }
+
+/* ─── Search Bar ─────────────────────────────────────────────────────────── */
+.lib-search-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg);
+}
+.lib-search-bar[hidden] { display: none; }
+#lib-search-input {
+  flex: 1; height: 38px; padding: 0 14px; border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface-hov);
+  font-size: 0.9375rem;
+  transition: border-color 0.15s;
+}
+#lib-search-input:focus { outline: none; border-color: var(--accent); }
+
+/* ─── Tabs ───────────────────────────────────────────────────────────────── */
+.lib-tabs {
+  display: flex; gap: 2px; padding: 10px 16px 6px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.lib-tabs::-webkit-scrollbar { display: none; }
+.lib-tab {
+  padding: 6px 16px; border-radius: 8px;
+  font-size: 0.875rem; font-weight: 500;
+  color: var(--fg-muted); white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+.lib-tab:hover { background: var(--surface-hov); color: var(--fg); }
+.lib-tab.active { background: var(--accent-subtle); color: var(--accent); }
+
+/* ─── Stats Bar ──────────────────────────────────────────────────────────── */
+.lib-stats {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 20px 10px;
+  font-size: 0.8125rem; color: var(--fg-subtle);
+}
+.lib-stats .dot { opacity: .4; }
+.streak-fire { font-style: normal; }
+
+/* ─── Book Grid ──────────────────────────────────────────────────────────── */
+.lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px 16px;
+  padding: 8px 20px 100px;
+}
+.lib-grid.lib-grid--list {
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+/* ─── Book Card (Grid) ───────────────────────────────────────────────────── */
+.book-card {
+  position: relative; display: flex; flex-direction: column;
+  border-radius: 10px; overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(.16,1,.3,1), box-shadow 0.18s;
+}
+.book-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.35); }
+.book-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.book-card:active { transform: translateY(-1px); }
+
+.book-cover {
+  position: relative; width: 100%; aspect-ratio: 2/3;
+  background: var(--surface); border-radius: 8px;
+  overflow: hidden; flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.book-cover img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.3s;
+}
+.book-card:hover .book-cover img { transform: scale(1.03); }
+.book-cover svg { width: 100%; height: 100%; }
+
+.cover-progress-ring {
+  position: absolute; bottom: 6px; right: 6px;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+  border-radius: 20px; padding: 2px 7px;
+  font-size: 0.625rem; font-weight: 700; color: #fff;
+}
+.cover-badge {
+  position: absolute; top: 6px; left: 6px;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+  border-radius: 6px; padding: 2px 6px;
+  font-size: 0.625rem; font-weight: 700; color: #fff;
+}
+.cover-badge--done { background: rgba(78,203,113,.85); }
+
+.book-info { padding: 8px 2px 0; }
+.book-title {
+  font-size: 0.8125rem; font-weight: 600;
+  line-height: 1.3; color: var(--fg);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; margin-bottom: 2px;
+}
+.book-author {
+  font-size: 0.75rem; color: var(--fg-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.book-last-read {
+  font-size: 0.6875rem; color: var(--fg-subtle); margin-top: 2px;
+}
+
+.book-menu-btn {
+  position: absolute; top: 4px; right: 4px;
+  width: 28px; height: 28px; border-radius: 6px;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+  color: #fff; font-size: 1rem; line-height: 1;
+  opacity: 0; transition: opacity 0.15s;
+}
+.book-card:hover .book-menu-btn,
+.book-card:focus-within .book-menu-btn { opacity: 1; }
+
+/* ─── Book Card (List) ───────────────────────────────────────────────────── */
+.book-card--list {
+  flex-direction: row; align-items: center; gap: 14px;
+  padding: 10px 14px; border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+}
+.book-card--list:hover { background: var(--surface-hov); transform: none; box-shadow: none; }
+.book-cover-sm {
+  width: 40px; height: 58px; border-radius: 4px;
+  overflow: hidden; flex-shrink: 0;
+  background: var(--surface-hov);
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.book-cover-sm img { width: 100%; height: 100%; object-fit: cover; }
+.book-meta { flex: 1; min-width: 0; }
+.book-meta .book-title { font-size: 0.9rem; }
+
+.book-progress-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.book-progress-bar { width: 60px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.book-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
+.book-pct { font-size: 0.75rem; color: var(--fg-muted); min-width: 28px; }
+
+.book-card--list .book-menu-btn {
+  position: static; opacity: 1; background: none;
+  color: var(--fg-muted); width: 32px; height: 32px;
+}
+
+/* ─── Empty State ────────────────────────────────────────────────────────── */
+.lib-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+  gap: 12px; padding: 60px 24px;
+  flex: 1;
+}
+.lib-empty[hidden] { display: none; }
+.empty-icon { width: 80px; height: 80px; color: var(--fg-subtle); margin-bottom: 8px; }
+.lib-empty h2 { font-size: 1.25rem; font-weight: 600; color: var(--fg); }
+.lib-empty p { font-size: 0.9rem; color: var(--fg-muted); max-width: 300px; line-height: 1.6; }
+
+/* ─── FAB (Import) ───────────────────────────────────────────────────────── */
+.fab {
+  position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+  right: 24px; z-index: 100;
+  width: 56px; height: 56px; border-radius: 16px;
+  background: var(--accent);
+  box-shadow: 0 6px 24px rgba(108,92,231,.45);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.fab:hover { transform: scale(1.06); box-shadow: 0 8px 28px rgba(108,92,231,.6); }
+.fab:active { transform: scale(0.97); }
+.fab svg { width: 24px; height: 24px; }
+
+/* ─── Drag & Drop ────────────────────────────────────────────────────────── */
+#view-library.drag-over::after {
+  content: 'Drop EPUB files here';
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(108,92,231,.12);
+  border: 3px dashed var(--accent);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 600; color: var(--accent);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .lib-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px 12px; padding: 8px 14px 100px; }
+  .fab { right: 16px; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
+}
+@media (min-width: 900px) {
+  .lib-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 24px 20px; }
+}
+@media (min-width: 1200px) {
+  .lib-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}

@@ -1,0 +1,207 @@
+/* ══════════════════════════════════════════════════
+   Folio — Reader View
+   ══════════════════════════════════════════════════ */
+
+/* ─── Reader Shell ───────────────────────────────────────────────────────── */
+#view-reader {
+  position: fixed; inset: 0; z-index: 50;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+}
+#view-reader[hidden] { display: none; }
+
+/* ─── Top Toolbar ────────────────────────────────────────────────────────── */
+.reader-toolbar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 12px;
+  background: var(--bg);
+  border-color: var(--border-subtle);
+  transition: transform 0.25s cubic-bezier(.16,1,.3,1), opacity 0.25s;
+  z-index: 20;
+}
+.reader-toolbar.hidden { opacity: 0; pointer-events: none; }
+.reader-toolbar--top {
+  height: calc(56px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+  position: relative;
+}
+.reader-toolbar.hidden.reader-toolbar--top { transform: translateY(-100%); }
+
+.reader-back { margin-right: 4px; }
+.reader-book-info {
+  display: flex; flex-direction: column; flex: 1; min-width: 0;
+  overflow: hidden;
+}
+.reader-book-title {
+  font-size: 0.875rem; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--fg);
+}
+.reader-book-author {
+  font-size: 0.75rem; color: var(--fg-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.reader-toolbar-actions { display: flex; align-items: center; gap: 2px; }
+
+/* ─── Bottom Toolbar ─────────────────────────────────────────────────────── */
+.reader-toolbar--bottom {
+  height: calc(56px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+}
+.reader-toolbar.hidden.reader-toolbar--bottom { transform: translateY(100%); }
+
+/* ─── Progress Slider ────────────────────────────────────────────────────── */
+.reader-progress-wrap { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.progress-slider {
+  width: 100%; height: 4px; cursor: pointer;
+  accent-color: var(--accent);
+  appearance: none; -webkit-appearance: none;
+  background: var(--border); border-radius: 2px;
+}
+.progress-slider::-webkit-slider-thumb {
+  appearance: none; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+  cursor: pointer; transition: box-shadow 0.15s;
+}
+.progress-slider::-webkit-slider-thumb:hover { box-shadow: 0 0 0 6px var(--accent-subtle); }
+.reader-location-label {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.6875rem; color: var(--fg-subtle); font-variant-numeric: tabular-nums;
+}
+#location-cfi { opacity: 0; } /* Hidden — reserved for dev tools */
+
+/* ─── Reader Canvas ──────────────────────────────────────────────────────── */
+.reader-canvas {
+  flex: 1; position: relative; overflow: hidden;
+  display: flex; align-items: stretch;
+}
+#epub-render-area {
+  flex: 1; width: 100%; height: 100%;
+  background: transparent;
+}
+#epub-render-area iframe {
+  border: none; background: transparent;
+  width: 100%; height: 100%;
+}
+
+/* ─── Swipe Zones (invisible click targets) ──────────────────────────────── */
+.swipe-zone {
+  position: absolute; top: 0; bottom: 0;
+  width: 20%; z-index: 5;
+  background: transparent; border: none; cursor: pointer;
+}
+.swipe-zone--prev { left: 0; }
+.swipe-zone--next { right: 0; }
+.swipe-zone:focus-visible {
+  background: var(--accent-subtle);
+}
+
+/* ─── TTS Bar ────────────────────────────────────────────────────────────── */
+.tts-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  background: var(--surface-elevated);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.tts-bar[hidden] { display: none; }
+
+.tts-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--fg-muted); transition: background 0.15s, color 0.15s;
+}
+.tts-btn:hover { background: var(--surface-hov); color: var(--fg); }
+.tts-btn svg { width: 18px; height: 18px; }
+.tts-play {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+}
+.tts-play:hover { background: var(--accent-hover); }
+.tts-stop { color: var(--danger); }
+.tts-stop:hover { background: var(--danger-bg); color: var(--danger); }
+
+.tts-speed-wrap {
+  display: flex; align-items: center; gap: 6px; flex: 1; min-width: 80px;
+}
+.tts-speed-wrap input { flex: 1; height: 4px; accent-color: var(--accent); cursor: pointer; }
+.tts-rate-label { font-size: 0.75rem; color: var(--fg-muted); min-width: 30px; text-align: right; }
+
+.tts-voice-select {
+  font-size: 0.75rem; max-width: 130px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface-hov); padding: 4px 8px; cursor: pointer;
+}
+
+/* ─── TOC Navigation ─────────────────────────────────────────────────────── */
+.toc-nav { flex: 1; overflow-y: auto; padding: 8px; }
+.toc-item {
+  padding: 8px 12px; border-radius: 8px; cursor: pointer;
+  font-size: 0.875rem; color: var(--fg-muted);
+  transition: background 0.12s, color 0.12s;
+  line-height: 1.4;
+}
+.toc-item:hover { background: var(--surface-hov); color: var(--fg); }
+.toc-item--d0 { font-weight: 600; color: var(--fg); }
+.toc-item--d1 { padding-left: 24px; font-size: 0.8125rem; }
+.toc-item--d2 { padding-left: 38px; font-size: 0.8rem; opacity: .8; }
+.toc-item--d3 { padding-left: 52px; font-size: 0.75rem; opacity: .6; }
+.toc-empty { padding: 20px 12px; color: var(--fg-muted); font-size: 0.875rem; }
+
+/* ─── Annotation List ────────────────────────────────────────────────────── */
+.annotation-filter {
+  display: flex; gap: 4px; padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ann-filter-btn {
+  padding: 5px 12px; border-radius: 6px; font-size: 0.8125rem; font-weight: 500;
+  color: var(--fg-muted); transition: all 0.15s;
+}
+.ann-filter-btn.active { background: var(--accent-subtle); color: var(--accent); }
+.ann-filter-btn:hover  { background: var(--surface-hov); color: var(--fg); }
+
+.annotation-list { flex: 1; overflow-y: auto; padding: 8px; }
+
+.ann-item {
+  padding: 10px 12px; border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 6px; cursor: pointer;
+  background: var(--surface);
+  transition: background 0.12s, border-color 0.12s;
+}
+.ann-item:hover { background: var(--surface-hov); border-color: var(--border); }
+.ann-item-header {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+}
+.ann-type-icon { font-style: normal; font-size: 0.875rem; }
+.hl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.ann-chapter { font-size: 0.6875rem; color: var(--fg-subtle); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ann-pct { font-size: 0.6875rem; color: var(--fg-subtle); flex-shrink: 0; }
+.ann-delete {
+  width: 22px; height: 22px; border-radius: 4px; font-size: 1rem;
+  color: var(--fg-subtle); flex-shrink: 0;
+  opacity: 0; transition: opacity 0.15s;
+}
+.ann-item:hover .ann-delete { opacity: 1; }
+.ann-delete:hover { color: var(--danger); background: var(--danger-bg); }
+
+.ann-quote {
+  font-size: 0.875rem; color: var(--fg); line-height: 1.5;
+  border-left: 2px solid var(--accent); padding-left: 8px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; margin-bottom: 4px;
+}
+.ann-note { font-size: 0.8125rem; color: var(--fg-muted); margin-top: 4px; }
+.ann-label { font-size: 0.875rem; color: var(--fg); font-weight: 500; }
+.ann-date { font-size: 0.6875rem; color: var(--fg-subtle); margin-top: 6px; display: block; }
+.ann-empty {
+  text-align: center; padding: 40px 20px;
+  color: var(--fg-muted); font-size: 0.875rem; line-height: 1.6;
+}
+.ann-empty p + p { margin-top: 4px; }

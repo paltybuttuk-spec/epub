@@ -1,0 +1,91 @@
+/* ══════════════════════════════════════════════════
+   Folio — Theme Tokens
+   Deep violet-ink palette (dark default)
+   ══════════════════════════════════════════════════ */
+
+/* ─── Dark (default) ────────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg:              #0E0E16;
+  --surface:         #16161F;
+  --surface-elevated:#1E1E2A;
+  --surface-hov:     #222230;
+  --surface-active:  #2A2A3A;
+
+  --fg:              #E8E6F0;
+  --fg-muted:        #8E8CA8;
+  --fg-subtle:       #5C5A70;
+
+  --accent:          #6C5CE7;
+  --accent-subtle:   rgba(108,92,231,.15);
+  --accent-hover:    #7D70F0;
+
+  --border:          #2C2B3C;
+  --border-subtle:   #1E1E2A;
+
+  --danger:          #FF6B6B;
+  --danger-bg:       rgba(255,107,107,.12);
+
+  --success:         #4ECB71;
+  --warning:         #FFB347;
+
+  color-scheme: dark;
+}
+
+/* ─── Light ──────────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:              #F5F4FA;
+  --surface:         #FFFFFF;
+  --surface-elevated:#FFFFFF;
+  --surface-hov:     #F0EFF8;
+  --surface-active:  #E8E7F5;
+
+  --fg:              #1A1828;
+  --fg-muted:        #6B6880;
+  --fg-subtle:       #9E9BB4;
+
+  --accent:          #5A4FCF;
+  --accent-subtle:   rgba(90,79,207,.12);
+  --accent-hover:    #4A3FBF;
+
+  --border:          #E2E0EE;
+  --border-subtle:   #EBE9F5;
+
+  --danger:          #E53E3E;
+  --danger-bg:       rgba(229,62,62,.08);
+
+  --success:         #38A169;
+  --warning:         #D69E2E;
+
+  color-scheme: light;
+}
+
+/* ─── System ─────────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  [data-theme="system"] {
+    --bg:              #F5F4FA;
+    --surface:         #FFFFFF;
+    --surface-elevated:#FFFFFF;
+    --surface-hov:     #F0EFF8;
+    --surface-active:  #E8E7F5;
+    --fg:              #1A1828;
+    --fg-muted:        #6B6880;
+    --fg-subtle:       #9E9BB4;
+    --accent:          #5A4FCF;
+    --accent-subtle:   rgba(90,79,207,.12);
+    --accent-hover:    #4A3FBF;
+    --border:          #E2E0EE;
+    --border-subtle:   #EBE9F5;
+    --danger:          #E53E3E;
+    --danger-bg:       rgba(229,62,62,.08);
+    color-scheme: light;
+  }
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
