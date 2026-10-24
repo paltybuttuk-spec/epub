@@ -402,7 +402,6 @@ export class ReaderController {
 
     // Fonts
     const fontGrid = document.getElementById('font-grid');
-    const { FONT_OPTIONS: fonts } = await import('./settings.js').catch(() => ({ FONT_OPTIONS: [] }));
     fontGrid.innerHTML = FONT_OPTIONS.map((f) => `
       <label class="font-chip ${settings.get('fontFamily') === f.id ? 'active' : ''}"
              style="${f.style}" data-font="${f.id}" role="radio"

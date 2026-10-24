@@ -1,4 +1,5 @@
 // main.js — Folio EPUB Reader: entry point & library controller
+import './styles/main.css';
 import { importEpubFiles, getLibrary, renderBookCard, showBookMenu, refreshLibraryStats } from './modules/library.js';
 import { getBookData, deleteBook, updateBookMeta, exportAllData } from './modules/db.js';
 import { ReaderController } from './modules/reader.js';

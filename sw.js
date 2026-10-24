@@ -2,16 +2,9 @@
 // Strategies: Cache-first for assets, Network-first for dynamic content
 
 const CACHE_NAME = 'folio-v2.0.0';
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/src/main.js',
-  '/src/styles/main.css',
-  '/src/styles/library.css',
-  '/src/styles/reader.css',
-  '/src/styles/themes.css',
-];
+// Injected at build time by vite-plugin-pwa (hashed JS/CSS/HTML assets)
+const PRECACHE = (self.__WB_MANIFEST || []).map((e) => '/' + String(e.url).replace(/^\//, ''));
+const STATIC_ASSETS = ['/', '/manifest.json', ...PRECACHE];
 
 const FONT_CACHE = 'folio-fonts-v1';
 const BOOK_CACHE = 'folio-books-v1';

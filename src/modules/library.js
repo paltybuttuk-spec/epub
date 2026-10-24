@@ -1,5 +1,4 @@
 // library.js — Book import, metadata, covers, collections
-import { v4 as uuid } from '../../node_modules/idb/build/index.js'; // polyfill below
 import { saveBook, getBook, getAllBooks, deleteBook, updateBookMeta, getReadingStats } from './db.js';
 import { EpubEngine } from './epub-engine.js';
 import { toast } from './utils.js';

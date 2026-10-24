@@ -67,6 +67,11 @@ export async function getBook(id) {
   return db.get('books', id);
 }
 
+export async function getBookData(id) {
+  const book = await getBook(id);
+  return book?.data ?? null;
+}
+
 export async function getAllBooks() {
   const db = await getDB();
   return db.getAll('books');
