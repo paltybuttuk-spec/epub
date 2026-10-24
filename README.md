@@ -1,6 +1,6 @@
 # 📚 Folio — Premium EPUB Reader PWA
 
-A fully-featured, offline-capable EPUB reader Progressive Web App. Built with vanilla JS, epub.js, IndexedDB, and the Web Speech API — no subscription, no ads, no tracking.
+A fully-featured, offline-capable EPUB and PDF reader Progressive Web App. Built with vanilla JS, epub.js, IndexedDB, and the Web Speech API — no subscription, no ads, no tracking.
 
 ---
 
@@ -15,6 +15,15 @@ A fully-featured, offline-capable EPUB reader Progressive Web App. Built with va
 - **Text justification & hyphenation** — typographic polish
 - **Full-screen immersive mode**
 - **Swipe & keyboard navigation**
+
+### PDF Viewer (Acrobat-style)
+- **Import PDFs** alongside EPUBs (button, drag-and-drop); covers, page counts and metadata are read automatically
+- **Continuous scroll** with lazy page rendering, selectable text and clickable links (internal and external)
+- **Zoom** 25–400 %, fit width, fit page, Ctrl/⌘ + scroll; **rotate**; **two-page spread**
+- **Sidebar** — page thumbnails, document outline (bookmarks), markup list, full-document find
+- **Markup** — highlight, underline, strikethrough (select text), freehand **draw**, sticky **notes**, **eraser**, 5 colours; stored per book and anchored in PDF coordinates so they survive zoom and rotation
+- **Print**, **download** the original, **document properties**, **full screen**, **dark pages** mode
+- Remembers page, zoom, rotation and layout per document
 
 ### Annotations
 - **Highlights** in 5 colours (yellow, green, blue, orange, purple)
@@ -180,16 +189,21 @@ The service worker's `sync` event handler in `sw.js` stubs out annotation and pr
 
 ## ⌨️ Keyboard Shortcuts
 
+**PDF viewer:** `+` / `−` zoom · `0` fit width · `←` / `→` page · `Home` / `End` · `G` go to page · `R` rotate · `S` sidebar · `D` draw · `N` note · `E` eraser · `F` full screen · `Ctrl/⌘+F` find · `Ctrl/⌘+P` print · `Esc` back
+
+**EPUB reader:**
+
 | Key | Action |
 |-----|--------|
 | `→` / `Space` / `Page Down` | Next page |
 | `←` / `Page Up` | Previous page |
 | `B` | Toggle bookmark |
+| `F` | Toggle full screen |
 | `T` | Toggle TTS |
 | `C` | Open table of contents |
 | `Ctrl+F` | Search in book |
 | `S` | Open settings (library) |
-| `I` | Import EPUB (library) |
+| `I` | Import EPUB or PDF (library) |
 | `/` | Search library |
 | `Esc` | Close modal / sidebar |
 

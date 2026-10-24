@@ -82,13 +82,13 @@
     </svg>
     <h2>Your library is empty</h2>
     <p>Drop an EPUB file here, or tap the button below to import your first book.</p>
-    <button class="btn-primary" id="btn-import-empty">Import EPUB</button>
+    <button class="btn-primary" id="btn-import-empty">Import EPUB or PDF</button>
   </div>
 
-  <button class="fab" id="btn-import" aria-label="Import EPUB file" title="Import EPUB (I)">
+  <button class="fab" id="btn-import" aria-label="Import EPUB or PDF file" title="Import EPUB / PDF (I)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
   </button>
-  <input type="file" id="file-input" accept=".epub,application/epub+zip" multiple hidden aria-hidden="true" />
+  <input type="file" id="file-input" accept=".epub,.pdf,application/epub+zip,application/pdf" multiple hidden aria-hidden="true" />
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ READER VIEW ══ -->

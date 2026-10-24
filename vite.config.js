@@ -32,6 +32,10 @@ export default defineConfig({
       filename: 'sw.js',
       manifest: false, // We manage our own manifest.json
       devOptions: { enabled: true },
+      injectManifest: {
+        globPatterns: ['**/*.{js,mjs,css,html,ico,png,svg,woff2}'],
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // pdf.js worker is ~1 MB
+      },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [

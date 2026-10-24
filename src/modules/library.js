@@ -15,7 +15,8 @@ export async function importEpubFiles(files) {
   const results = [];
   for (const file of files) {
     try {
-      const book = await importSingleEpub(file);
+      const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+      const book = isPdf ? await importSinglePdf(file) : await importSingleEpub(file);
       results.push({ ok: true, book });
     } catch (err) {
       console.error('[Library] Import failed:', file.name, err);
@@ -23,6 +24,38 @@ export async function importEpubFiles(files) {
     }
   }
   return results;
+}
+
+async function importSinglePdf(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const { readPdfInfo } = await import('./pdf-viewer.js'); // lazy: keeps pdf.js out of the main bundle
+  const info = await readPdfInfo(arrayBuffer);
+  const id = makeId();
+  const bookRecord = {
+    id,
+    format: 'pdf',
+    title: info.title || file.name.replace(/\.pdf$/i, ''),
+    author: info.author || 'Unknown Author',
+    publisher: '', language: '', description: info.subject || '', rights: '', pubDate: '',
+    identifier: id,
+    subject: info.keywords || '',
+    cover: info.cover,
+    pageCount: info.pageCount,
+    wordCount: info.pageCount * 300, // rough estimate for time-left labels
+    tocDepth: 0,
+    chapterCount: info.pageCount,
+    data: arrayBuffer,
+    addedAt: Date.now(),
+    lastOpened: null,
+    readPercent: 0,
+    finished: false,
+    tags: [],
+    collectionIds: [],
+    fileSize: file.size,
+    fileName: file.name,
+  };
+  await saveBook(bookRecord);
+  return bookRecord;
 }
 
 async function importSingleEpub(file) {
@@ -157,6 +190,7 @@ export function renderBookCard(book, viewMode = 'grid') {
       ${book.cover
         ? `<img src="${book.cover}" alt="Cover of ${escHtml(book.title)}" loading="lazy" />`
         : defaultCoverSVG(book.title, book.author, 'lg')}
+      ${book.format === 'pdf' ? '<span class="format-badge">PDF</span>' : ''}
       ${pct > 0 ? `<div class="cover-progress-ring" style="--pct:${pct}"><span>${pct}%</span></div>` : ''}
       ${book.finished ? '<div class="cover-badge cover-badge--done">✓ Done</div>' : ''}
     </div>
@@ -201,7 +235,8 @@ export function showBookMenu(bookId, anchorEl) {
     <button class="ctx-btn" data-action="open"   data-id="${bookId}" role="menuitem">📖 Read</button>
     <button class="ctx-btn" data-action="detail" data-id="${bookId}" role="menuitem">ℹ️ Details</button>
     <button class="ctx-btn" data-action="mark-done" data-id="${bookId}" role="menuitem">✓ Mark Finished</button>
-    <button class="ctx-btn" data-action="export-ann" data-id="${bookId}" role="menuitem">💾 Export Notes</button>
+    <button class="ctx-btn" data-action="export-ann" data-id="${bookId}" role="menuitem">💾 Export Notes (JSON)</button>
+    <button class="ctx-btn" data-action="export-md" data-id="${bookId}" role="menuitem">📝 Export Notes (Markdown)</button>
     <button class="ctx-btn ctx-btn--danger" data-action="delete" data-id="${bookId}" role="menuitem">🗑 Remove Book</button>
   `;
 

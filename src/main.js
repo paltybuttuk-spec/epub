@@ -25,6 +25,7 @@ let currentSort   = settings.get('librarySort') ?? 'addedAt';
 let currentView   = settings.get('libraryView') ?? 'grid';
 let searchQuery   = '';
 let reader        = null;
+let pdfViewer     = null;
 
 async function renderLibrary() {
   const grid  = document.getElementById('lib-grid');
@@ -172,6 +173,7 @@ function bindLibraryEvents() {
   document.addEventListener('keydown', (e) => {
     if (e.target.closest('input, textarea')) return;
     if (document.getElementById('view-reader') && !document.getElementById('view-reader').hidden) return;
+    if (document.getElementById('view-pdf') && !document.getElementById('view-pdf').hidden) return;
     if (e.key === 'i' || e.key === 'I') document.getElementById('btn-import')?.click();
     if (e.key === '/' || (e.ctrlKey && e.key === 'f')) {
       e.preventDefault();
@@ -191,6 +193,20 @@ async function openBook(id) {
   const meta  = books.find((b) => b.id === id);
   if (!meta) return;
 
+  if (meta.format === 'pdf') {
+    try {
+      const { PdfViewer } = await import('./modules/pdf-viewer.js');
+      pdfViewer ??= new PdfViewer();
+      pdfViewer.onClose = () => renderLibrary();
+      await pdfViewer.open(id, data, meta);
+    } catch (err) {
+      console.error('[Main] Failed to open PDF:', err);
+      toast('Could not open this PDF. The file may be corrupted or password-protected.', 'error');
+      document.getElementById('view-library').hidden = false;
+    }
+    return;
+  }
+
   if (!reader) reader = new ReaderController();
 
   try {
@@ -207,6 +223,12 @@ async function handleBookAction(action, id) {
   switch (action) {
     case 'open':
       await openBook(id);
+      break;
+    case 'detail':
+      await showBookDetails(id);
+      break;
+    case 'export-md':
+      await exportNotesMarkdown(id);
       break;
     case 'mark-done':
       await updateBookMeta(id, { finished: true, readPercent: 100 });
@@ -248,6 +270,81 @@ async function handleImport(files) {
   if (err.length) toast(`${err.length} file${err.length > 1 ? 's' : ''} failed to import`, 'error');
 
   await renderLibrary();
+}
+
+// ─── Details & Markdown export ────────────────────────────────────────────────
+const escHtml = (v = '') => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+async function showBookDetails(id) {
+  const { getBook, getProgress } = await import('./modules/db.js');
+  const [book, prog] = await Promise.all([getBook(id), getProgress(id)]);
+  if (!book) return;
+  const fmtSize = (n) => (n > 1048576 ? `${(n / 1048576).toFixed(2)} MB` : `${Math.round(n / 1024)} KB`);
+  const fmtDate = (t) => (t ? new Date(t).toLocaleString() : '—');
+  const isPdf = book.format === 'pdf';
+  const rows = [
+    ['Format', isPdf ? 'PDF' : 'EPUB'],
+    ['Author', book.author], ['Publisher', book.publisher], ['Language', book.language],
+    ['Published', book.pubDate], ['Identifier', book.identifier], ['Subject / keywords', book.subject],
+    [isPdf ? 'Pages' : 'Chapters', isPdf ? book.pageCount : book.chapterCount],
+    ['Words (approx.)', book.wordCount ? book.wordCount.toLocaleString() : ''],
+    ['File', book.fileName], ['File size', book.fileSize ? fmtSize(book.fileSize) : ''],
+    ['Progress', `${Math.round(book.readPercent ?? 0)}%${isPdf && prog?.page ? ` (page ${prog.page})` : ''}`],
+    ['Added', fmtDate(book.addedAt)], ['Last opened', fmtDate(book.lastOpened)],
+    ['Rights', book.rights],
+  ].filter(([, v]) => v !== undefined && v !== null && v !== '');
+
+  document.getElementById('book-details-dialog')?.remove();
+  const dlg = document.createElement('dialog');
+  dlg.id = 'book-details-dialog';
+  dlg.className = 'fl-dialog';
+  dlg.innerHTML = `
+    <form method="dialog">
+      <div class="fl-dialog-head">
+        ${book.cover ? `<img src="${book.cover}" alt="" />` : ''}
+        <div><h3>${escHtml(book.title)}</h3><p>${escHtml(book.author)}</p></div>
+      </div>
+      ${book.description ? `<p class="fl-dialog-desc">${escHtml(String(book.description).replace(/<[^>]*>/g, ' ').slice(0, 600))}</p>` : ''}
+      <dl class="fl-props">${rows.map(([k, v]) => `<dt>${escHtml(k)}</dt><dd>${escHtml(v)}</dd>`).join('')}</dl>
+      <div class="fl-dialog-actions"><button class="btn-primary" value="close">Close</button></div>
+    </form>`;
+  dlg.addEventListener('close', () => dlg.remove());
+  document.body.appendChild(dlg);
+  dlg.showModal();
+}
+
+async function exportNotesMarkdown(id) {
+  const { getBook, getAnnotationsForBook } = await import('./modules/db.js');
+  const [book, anns] = await Promise.all([getBook(id), getAnnotationsForBook(id)]);
+  const items = anns.filter((a) => a.type !== 'bookmark' || a.chapter || a.page);
+  if (!items.length) { toast('No notes or highlights to export yet'); return; }
+  const kind = { highlight: 'Highlight', underline: 'Underline', note: 'Note', bookmark: 'Bookmark',
+    'pdf-highlight': 'Highlight', 'pdf-underline': 'Underline', 'pdf-strike': 'Strikethrough', 'pdf-ink': 'Drawing', 'pdf-note': 'Note' };
+  const lines = [`# ${book?.title ?? 'Notes'}`, '', book?.author ? `*${book.author}*` : '', '', `Exported ${new Date().toLocaleDateString()}`, ''];
+  const isPdf = book?.format === 'pdf';
+  const groups = new Map();
+  for (const a of items) {
+    const key = isPdf ? `Page ${a.page ?? '?'}` : (a.chapter || 'Uncategorised');
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(a);
+  }
+  const ordered = isPdf ? [...groups.entries()].sort((x, y) => parseInt(x[0].slice(5), 10) - parseInt(y[0].slice(5), 10)) : [...groups.entries()];
+  for (const [heading, list] of ordered) {
+    lines.push(`## ${heading}`, '');
+    for (const a of list) {
+      const label = kind[a.type] ?? 'Note';
+      if (a.text) lines.push(`> ${String(a.text).replace(/\n+/g, ' ')}`, '');
+      if (a.note) lines.push(`**${label}:** ${a.note}`, '');
+      else if (!a.text) lines.push(`- ${label}${a.type === 'pdf-ink' ? ' (drawing)' : ''}`, '');
+    }
+  }
+  const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${(book?.title ?? 'notes').replace(/[\\/:*?"<>|]+/g, '-')}-notes.md`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  toast('Notes exported as Markdown');
 }
 
 function showLoadingToast(message) {

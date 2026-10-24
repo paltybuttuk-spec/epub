@@ -136,7 +136,7 @@ export function setupDropZone(element, onDrop) {
     e.preventDefault();
     element.classList.remove('drag-over');
     const files = [...e.dataTransfer.files].filter((f) =>
-      f.type === 'application/epub+zip' || f.name.endsWith('.epub')
+      f.type === 'application/epub+zip' || /\.(epub|pdf)$/i.test(f.name) || f.type === 'application/pdf'
     );
     if (files.length) onDrop(files);
   });

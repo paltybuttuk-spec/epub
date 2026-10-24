@@ -575,6 +575,10 @@ export class ReaderController {
       if (e.key === 'b' || e.key === 'B') this._toggleBookmark();
       if (e.key === 't' || e.key === 'T') document.getElementById('btn-tts')?.click();
       if (e.key === 'c' || e.key === 'C') document.getElementById('btn-sidebar-toc')?.click();
+      if (e.key === 'f' || e.key === 'F') {
+        if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+        else document.documentElement.requestFullscreen?.().catch(() => {});
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
         e.preventDefault();
         document.getElementById('btn-search-in-book')?.click();
