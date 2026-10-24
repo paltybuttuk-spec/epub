@@ -85,7 +85,7 @@ export function sortBy(arr, key, desc = false) {
 // ─── PWA Helpers ──────────────────────────────────────────────────────────────
 export function registerSW(path = '/sw.js') {
   if (!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register(path, { scope: '/' }).then((reg) => {
+  navigator.serviceWorker.register(path, { scope: path.replace(/sw\.js$/, '') }).then((reg) => {
     console.log('[SW] Registered:', reg.scope);
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;

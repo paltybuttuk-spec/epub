@@ -1,7 +1,11 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+// Set BASE_PATH (e.g. /epub/) when deploying to a GitHub Pages subpath
+const base = process.env.BASE_PATH || '/';
+
 export default defineConfig({
+  base,
   root: '.',
   publicDir: 'public',
   build: {

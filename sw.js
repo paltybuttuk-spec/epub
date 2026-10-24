@@ -3,8 +3,9 @@
 
 const CACHE_NAME = 'folio-v2.0.0';
 // Injected at build time by vite-plugin-pwa (hashed JS/CSS/HTML assets)
-const PRECACHE = (self.__WB_MANIFEST || []).map((e) => '/' + String(e.url).replace(/^\//, ''));
-const STATIC_ASSETS = ['/', '/manifest.json', ...PRECACHE];
+const BASE = new URL('./', self.location).pathname; // '/' or '/epub/'
+const PRECACHE = (self.__WB_MANIFEST || []).map((e) => BASE + String(e.url).replace(/^\//, ''));
+const STATIC_ASSETS = [BASE, BASE + 'manifest.json', ...PRECACHE];
 
 const FONT_CACHE = 'folio-fonts-v1';
 const BOOK_CACHE = 'folio-books-v1';
@@ -97,10 +98,10 @@ self.addEventListener('push', (event) => {
   const title = data.title ?? 'Folio';
   const options = {
     body: data.body ?? 'Continue your reading session.',
-    icon: '/icons/icon-192.png',
+    icon: BASE + 'icons/icon-192.png',
     badge: '/icons/badge-72.png',
     tag: data.tag ?? 'folio-reminder',
-    data: data.url ?? '/',
+    data: data.url ?? BASE,
     actions: [
       { action: 'open', title: 'Open Folio' },
       { action: 'dismiss', title: 'Dismiss' },

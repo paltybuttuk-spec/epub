@@ -1,19 +1,19 @@
 {
-  "id": "/",
+  "id": "./",
   "name": "Folio — EPUB Reader",
   "short_name": "Folio",
   "description": "Premium EPUB reader with annotations, TTS, themes, and library management.",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0f0f10",
   "theme_color": "#0f0f10",
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "file_handlers": [
-    { "action": "/", "accept": { "application/epub+zip": [".epub"] } }
+    { "action": "./", "accept": { "application/epub+zip": [".epub"] } }
   ]
 }

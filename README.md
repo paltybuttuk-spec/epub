@@ -72,8 +72,8 @@ A fully-featured, offline-capable EPUB reader Progressive Web App. Built with va
 ### Development
 
 ```bash
-git clone https://github.com/YOUR_USER/epub-reader-pwa.git
-cd epub-reader-pwa
+git clone https://github.com/paltybuttuk-spec/epub.git
+cd epub
 npm install
 npm run dev
 # → http://localhost:3000
@@ -91,7 +91,7 @@ npm run preview   # preview the dist/ folder
 ## 📁 Repository Structure
 
 ```
-epub-reader-pwa/
+epub/
 ├── index.html                  # App shell — all views, modals, sidebars in HTML
 ├── manifest.json               # (root — for Vite) → public/manifest.json served
 ├── sw.js                       # Service worker (cache-first + background sync)
@@ -127,7 +127,7 @@ epub-reader-pwa/
 
 1. Push to `main` — the workflow builds and deploys automatically.
 2. Go to **Settings → Pages → Source: GitHub Actions**.
-3. Your app is live at `https://YOUR_USER.github.io/epub-reader-pwa/`.
+3. Your app is live at `https://paltybuttuk-spec.github.io/epub/`.
 
 ---
 
@@ -150,7 +150,7 @@ epub-reader-pwa/
 
 ### Adding Icons
 
-Place PNG files in `public/icons/` at these sizes:
+Icons are included in `public/icons/` (generated placeholders; replace with your own artwork at the same sizes):
 
 ```
 icon-72.png   icon-96.png   icon-128.png   icon-144.png
@@ -158,8 +158,6 @@ icon-152.png  icon-192.png  icon-384.png   icon-512.png
 icon-maskable-192.png       icon-maskable-512.png
 apple-touch-icon.png  (180×180)
 favicon.svg
-shortcut-library.png  (96×96)
-shortcut-read.png     (96×96)
 ```
 
 Use [PWA Asset Generator](https://github.com/elegantapp/pwa-asset-generator) to generate all sizes from a single SVG:

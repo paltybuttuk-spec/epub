@@ -10,7 +10,7 @@ import { toast, registerSW, requestPersistentStorage, setupDropZone, downloadJSO
 (async function boot() {
   await settings.init();
   applyAppTheme(settings.get('appTheme'));
-  registerSW('/sw.js');
+  registerSW(import.meta.env.BASE_URL + 'sw.js');
   requestPersistentStorage();
   setupInstallPrompt();
   await renderLibrary();
